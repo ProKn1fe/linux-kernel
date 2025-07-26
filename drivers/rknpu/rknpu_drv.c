@@ -783,7 +783,7 @@ static void rknpu_init_timer(struct rknpu_device *rknpu_dev)
 
 static void rknpu_cancel_timer(struct rknpu_device *rknpu_dev)
 {
-	destroy_hrtimer_on_stack(&rknpu_dev->timer.timer);
+	destroy_hrtimer_on_stack(&rknpu_dev->sleeper_timer.timer);
 }
 
 static bool rknpu_is_iommu_enable(struct device *dev)
