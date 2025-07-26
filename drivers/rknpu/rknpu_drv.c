@@ -741,7 +741,7 @@ static struct drm_driver rknpu_drm_driver = {
 static enum hrtimer_restart hrtimer_handler(struct hrtimer *timer)
 {
 	struct rknpu_device *rknpu_dev =
-		container_of(timer, struct rknpu_device, timer);
+		container_of(timer.timer, struct rknpu_device, timer);
 	struct rknpu_subcore_data *subcore_data = NULL;
 	struct rknpu_job *job = NULL;
 	ktime_t now;
