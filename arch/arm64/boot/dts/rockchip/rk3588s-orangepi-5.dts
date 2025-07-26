@@ -20,6 +20,10 @@
 		vin-supply = <&vcc5v0_sys>;
 	};
 
+		npu_opp_info: npu-opp-info@55 {
+			reg = <0x55 0x6>;
+		};
+
 	rknpu: npu@fdab0000 {
 		compatible = "rockchip,rk3588-rknpu";
 		reg = <0x0 0xfdab0000 0x0 0x10000>,
