@@ -74,8 +74,8 @@ static int rknpu_gem_get_pages(struct rknpu_gem_object *rknpu_obj)
 	iommu_flush_iotlb_all(iommu_get_domain_for_dev(drm->dev));
 
 	if (rknpu_obj->flags & RKNPU_MEM_KERNEL_MAPPING) {
-		rknpu_obj->cookie = vmap(rknpu_obj->pages, rknpu_obj->num_pages,
-					 VM_MAP, PAGE_KERNEL);
+		rknpu_obj->cookie = vm_map_ram(rknpu_obj->pages, rknpu_obj->num_pages,
+					 NUMA_NO_NODE);
 		if (!rknpu_obj->cookie) {
 			ret = -ENOMEM;
 			LOG_ERROR("failed to vmap: %d\n", ret);
@@ -119,7 +119,7 @@ static void rknpu_gem_put_pages(struct rknpu_gem_object *rknpu_obj)
 		!(rknpu_obj->flags & RKNPU_MEM_IOMMU_LIMIT_IOVA_ALIGNMENT);
 
 	if (rknpu_obj->flags & RKNPU_MEM_KERNEL_MAPPING) {
-		vunmap(rknpu_obj->kv_addr);
+		vm_unmap_ram(rknpu_obj->kv_addr, rknpu_obj->num_pages);
 		rknpu_obj->kv_addr = NULL;
 	}
 
@@ -1480,13 +1480,13 @@ void *rknpu_gem_prime_vmap(struct drm_gem_object *obj)
 	if (!rknpu_obj->pages)
 		return NULL;
 
-	return vmap(rknpu_obj->pages, rknpu_obj->num_pages, VM_MAP,
-		    PAGE_KERNEL);
+	return vm_map_ram(rknpu_obj->pages, rknpu_obj->num_pages, NUMA_NO_NODE);
 }
 
 void rknpu_gem_prime_vunmap(struct drm_gem_object *obj, void *vaddr)
 {
-	vunmap(vaddr);
+	struct rknpu_gem_object *rknpu_obj = to_rknpu_obj(obj);
+	vm_unmap_ram(vaddr, rknpu_obj->num_pages);
 }
 #else
 int rknpu_gem_prime_vmap(struct drm_gem_object *obj, struct iosys_map *map)
@@ -1497,8 +1497,7 @@ int rknpu_gem_prime_vmap(struct drm_gem_object *obj, struct iosys_map *map)
 	if (!rknpu_obj->pages)
 		return -EINVAL;
 
-	vaddr = vmap(rknpu_obj->pages, rknpu_obj->num_pages, VM_MAP,
-		     PAGE_KERNEL);
+	vaddr = vm_map_ram(rknpu_obj->pages, rknpu_obj->num_pages, NUMA_NO_NODE);
 	if (!vaddr)
 		return -ENOMEM;
 
@@ -1512,7 +1511,7 @@ void rknpu_gem_prime_vunmap(struct drm_gem_object *obj, struct iosys_map *map)
 	struct rknpu_gem_object *rknpu_obj = to_rknpu_obj(obj);
 
 	if (rknpu_obj->pages) {
-		vunmap(map->vaddr);
+		vm_unmap_ram(map->vaddr, rknpu_obj->num_pages);
 		map->vaddr = NULL;
 	}
 }
