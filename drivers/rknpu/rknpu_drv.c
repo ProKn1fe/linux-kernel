@@ -1025,7 +1025,7 @@ static int rknpu_power_off(struct rknpu_device *rknpu_dev)
 		 * If pm runtime framework can handle this issue in the future, remove
 		 * this.
 		 */
-		ret = readx_poll_timeout(rockchip_iommu_is_enabled, dev, val,
+		ret = readx_poll_timeout(rknpu_is_iommu_enable, dev, val,
 					 !val, NPU_MMU_DISABLED_POLL_PERIOD_US,
 					 NPU_MMU_DISABLED_POLL_TIMEOUT_US);
 		if (ret) {
