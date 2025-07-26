@@ -17,6 +17,7 @@
 #include <linux/version.h>
 #include <linux/hrtimer.h>
 #include <linux/miscdevice.h>
+#include <linux/vmalloc.h>
 
 #include <soc/rockchip/rockchip_opp_select.h>
 #include <soc/rockchip/rockchip_system_monitor.h>
