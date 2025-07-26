@@ -157,7 +157,8 @@ struct rknpu_device {
 	struct delayed_work power_off_work;
 	struct workqueue_struct *power_off_wq;
 	struct rknpu_debugger debugger;
-	struct hrtimer_sleeper timer;
+	struct hrtimer timer;
+	struct hrtimer_sleeper sleeper_timer;
 	ktime_t kt;
 	phys_addr_t sram_start;
 	phys_addr_t sram_end;
