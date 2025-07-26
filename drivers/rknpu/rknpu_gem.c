@@ -447,7 +447,7 @@ static int rknpu_iommu_map_with_cache_sgt(struct iommu_domain *domain,
 		cache_start = rknpu_dev->nbuf_start + s->offset;
 		size = length < s->length ? length : s->length;
 		ret = iommu_map(domain, iova_start, cache_start, size,
-				IOMMU_READ | IOMMU_WRITE);
+				IOMMU_READ | IOMMU_WRITE, GFP_KERNEL);
 		if (ret) {
 			LOG_ERROR("cache iommu_map error: %d\n", ret);
 			return ret;
@@ -547,7 +547,7 @@ static int rknpu_gem_alloc_buf_with_cache(struct rknpu_gem_object *rknpu_obj,
 	if (!rknpu_obj->cache_with_sgt)
 		ret = iommu_map(domain, rknpu_obj->iova_start,
 				cache_start + cache_offset, cache_size,
-				IOMMU_READ | IOMMU_WRITE);
+				IOMMU_READ | IOMMU_WRITE, GFP_KERNEL);
 	else
 		ret = rknpu_iommu_map_with_cache_sgt(domain, rknpu_dev,
 						     rknpu_obj, cache_size);
@@ -593,7 +593,7 @@ static int rknpu_gem_alloc_buf_with_cache(struct rknpu_gem_object *rknpu_obj,
 		size = (length < s->length) ? length : s->length;
 
 		ret = iommu_map(domain, offset, sg_phys(s), size,
-				IOMMU_READ | IOMMU_WRITE);
+				IOMMU_READ | IOMMU_WRITE, GFP_KERNEL);
 		if (ret) {
 			LOG_ERROR("ddr iommu_map error: %d\n", ret);
 			goto sgl_unmap;
