@@ -726,17 +726,11 @@ static struct drm_driver rknpu_drm_driver = {
 	.gem_prime_import = drm_gem_prime_import,
 #endif
 	.gem_prime_import_sg_table = rknpu_gem_prime_import_sg_table,
-#if KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE
-	.gem_prime_mmap = drm_gem_prime_mmap,
-#else
-	.gem_prime_mmap = rknpu_gem_prime_mmap,
-#endif
 	.ioctls = rknpu_ioctls,
 	.num_ioctls = ARRAY_SIZE(rknpu_ioctls),
 	.fops = &rknpu_drm_driver_fops,
 	.name = DRIVER_NAME,
 	.desc = DRIVER_DESC,
-	.date = DRIVER_DATE,
 	.major = DRIVER_MAJOR,
 	.minor = DRIVER_MINOR,
 	.patchlevel = DRIVER_PATCHLEVEL,
@@ -1526,7 +1520,7 @@ err_remove_drv:
 	return ret;
 }
 
-static int rknpu_remove(struct platform_device *pdev)
+static void rknpu_remove(struct platform_device *pdev)
 {
 	struct rknpu_device *rknpu_dev = platform_get_drvdata(pdev);
 	int i = 0;
@@ -1586,8 +1580,6 @@ static int rknpu_remove(struct platform_device *pdev)
 	}
 
 	pm_runtime_disable(&pdev->dev);
-
-	return 0;
 }
 
 #ifndef FPGA_PLATFORM
