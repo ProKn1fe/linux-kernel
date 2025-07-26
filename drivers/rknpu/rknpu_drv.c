@@ -740,10 +740,8 @@ static struct drm_driver rknpu_drm_driver = {
 
 static enum hrtimer_restart hrtimer_handler(struct hrtimer *timer)
 {
-	struct hrtimer_sleeper sleeper_timer = 
-		container_of(timer, struct hrtimer_sleeper, timer);
 	struct rknpu_device *rknpu_dev =
-		container_of(sleeper_timer, struct rknpu_device, timer);
+		container_of(timer, struct rknpu_device, timer);
 	struct rknpu_subcore_data *subcore_data = NULL;
 	struct rknpu_job *job = NULL;
 	ktime_t now;
@@ -777,9 +775,10 @@ static enum hrtimer_restart hrtimer_handler(struct hrtimer *timer)
 static void rknpu_init_timer(struct rknpu_device *rknpu_dev)
 {
 	rknpu_dev->kt = ktime_set(0, RKNPU_LOAD_INTERVAL);
-	hrtimer_setup_sleeper_on_stack(&rknpu_dev->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-	rknpu_dev->timer.timer.function = hrtimer_handler;
-	hrtimer_start(&rknpu_dev->timer.timer, rknpu_dev->kt, HRTIMER_MODE_REL);
+	hrtimer_setup_sleeper_on_stack(&rknpu_dev->sleeper_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+	rknpu_dev->sleeper_timer.timer.function = hrtimer_handler;
+	rknpu_dev->timer = rknpu_dev->sleeper_timer.timer;
+	hrtimer_start(&rknpu_dev->sleeper_timer.timer, rknpu_dev->kt, HRTIMER_MODE_REL);
 }
 
 static void rknpu_cancel_timer(struct rknpu_device *rknpu_dev)
