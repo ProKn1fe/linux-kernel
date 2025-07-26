@@ -18,6 +18,10 @@
 #include <linux/hrtimer.h>
 #include <linux/miscdevice.h>
 
+#include <soc/rockchip/rockchip_opp_select.h>
+#include <soc/rockchip/rockchip_system_monitor.h>
+#include <soc/rockchip/rockchip_ipa.h>
+
 #include "rknpu_job.h"
 #include "rknpu_fence.h"
 #include "rknpu_debugger.h"
@@ -133,9 +137,12 @@ struct rknpu_device {
 	int num_clks;
 	struct regulator *vdd;
 	struct regulator *mem;
+	struct monitor_dev_info *mdev_info;
+	struct ipa_power_model_data *model_data;
 	struct thermal_cooling_device *devfreq_cooling;
 	struct devfreq *devfreq;
 	unsigned long ondemand_freq;
+	struct rockchip_opp_info opp_info;
 	unsigned long current_freq;
 	unsigned long current_volt;
 	int bypass_irq_handler;
