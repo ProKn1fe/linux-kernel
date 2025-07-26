@@ -776,7 +776,7 @@ static void rknpu_init_timer(struct rknpu_device *rknpu_dev)
 {
 	rknpu_dev->kt = ktime_set(0, RKNPU_LOAD_INTERVAL);
 	hrtimer_setup_sleeper_on_stack(&rknpu_dev->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-	rknpu_dev->timer.function = hrtimer_handler;
+	rknpu_dev->timer.timer.function = hrtimer_handler;
 	hrtimer_start(&rknpu_dev->timer.timer, rknpu_dev->kt, HRTIMER_MODE_REL);
 }
 
