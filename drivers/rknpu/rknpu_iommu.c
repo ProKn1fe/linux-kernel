@@ -123,7 +123,7 @@ static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
 		sg_dma_len(s) = 0;
 
 #if KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE
-		if (sg_is_dma_bus_address(s)) {
+		if (sg_dma_is_bus_address(s)) {
 			if (i > 0)
 				cur = sg_next(cur);
 
@@ -181,7 +181,7 @@ static void __invalidate_sg(struct scatterlist *sg, int nents)
 
 #if KERNEL_VERSION(6, 1, 0) <= LINUX_VERSION_CODE
 	for_each_sg(sg, s, nents, i) {
-		if (sg_is_dma_bus_address(s)) {
+		if (sg_dma_is_bus_address(s)) {
 			sg_dma_unmark_bus_address(s);
 		} else {
 			if (sg_dma_address(s) != DMA_MAPPING_ERROR)
@@ -274,7 +274,7 @@ int rknpu_iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
 		goto out_restore_sg;
 	}
 
-	ret = iommu_map_sg(domain, iova, sg, nents, prot);
+	ret = iommu_map_sg(domain, iova, sg, nents, prot, GFP_KERNEL);
 	if (ret < 0 || ret < iova_len) {
 		LOG_ERROR("failed to map SG: %zd\n", ret);
 		goto out_free_iova;
@@ -318,7 +318,7 @@ void rknpu_iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
 	 * just have to be determined.
 	 */
 	for_each_sg(sg, tmp, nents, i) {
-		if (sg_is_dma_bus_address(tmp)) {
+		if (sg_dma_is_bus_address(tmp)) {
 			sg_dma_unmark_bus_address(tmp);
 			continue;
 		}
@@ -332,7 +332,7 @@ void rknpu_iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
 
 	nents -= i;
 	for_each_sg(tmp, tmp, nents, i) {
-		if (sg_is_dma_bus_address(tmp)) {
+		if (sg_dma_is_bus_address(tmp)) {
 			sg_dma_unmark_bus_address(tmp);
 			continue;
 		}
